@@ -246,6 +246,18 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/module2',
+    component: Layout,
+    children: [
+      {
+        path: 'database_UI',
+        component: () => import('@/views/database-ui/index'),
+        name: 'Tab',
+        meta: { title: 'Database UI', icon: 'tab' }
+      }
+    ]
+  },
 
   {
     path: '/error',
