@@ -1,23 +1,28 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.title" placeholder="Title" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-<!--      <el-select v-model="listQuery.importance" placeholder="Imp" clearable style="width: 90px" class="filter-item">-->
-<!--        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />-->
+      <el-input v-model="listQuery.title" class="filter-item" placeholder="Title" style="width: 200px;"
+                @keyup.enter.native="handleFilter"/>
+      <!--      <el-select v-model="listQuery.importance" placeholder="Imp" clearable style="width: 90px" class="filter-item">-->
+      <!--        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />-->
+      <!--      </el-select>-->
+<!--      <el-select v-model="listQuery.type" class="filter-item" clearable placeholder="Type" style="width: 130px">-->
+<!--        <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'"-->
+<!--                   :value="item.key"/>-->
 <!--      </el-select>-->
-      <el-select v-model="listQuery.type" placeholder="Type" clearable class="filter-item" style="width: 130px">
-        <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'" :value="item.key" />
+
+      <el-select v-model="listQuery.sort" class="filter-item" style="width: 140px" @change="handleFilter">
+        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
       </el-select>
-      <el-select v-model="listQuery.sort" style="width: 140px" class="filter-item" @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
-      </el-select>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
+      <el-button v-waves class="filter-item" icon="el-icon-search" type="primary" @click="handleFilter">
         Search
       </el-button>
-      <el-button class="filter-item" style="margin-left: 10px;" type="primary" icon="el-icon-edit" @click="handleCreate">
+      <el-button class="filter-item" icon="el-icon-edit" style="margin-left: 10px;" type="primary"
+                 @click="handleCreate">
         Add
       </el-button>
-      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
+      <el-button v-waves :loading="downloadLoading" class="filter-item" icon="el-icon-download" type="primary"
+                 @click="handleDownload">
         Export
       </el-button>
       <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
@@ -33,14 +38,14 @@
       fit
       highlight-current-row
       style="width: 100%;"
-      @sort-change="sortChange"
-    >
-      <el-table-column label="ID" prop="id" sortable="custom" align="center" width="80" :class-name="getSortClass('id')">
+      @sort-change="sortChange">
+      <el-table-column :class-name="getSortClass('id')" align="center" label="ID" prop="id" sortable="custom"
+                       width="80">
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="Date" width="150px" align="center">
+      <el-table-column align="center" label="Date" width="150px">
         <template slot-scope="{row}">
           <span>{{ row.timestamp | parseTime('{y}-{m}-{d} {h}:{i}') }}</span>
         </template>
@@ -51,42 +56,43 @@
           <el-tag>{{ row.type | typeFilter }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="Author" width="110px" align="center">
+      <el-table-column align="center" label="Author" width="110px">
         <template slot-scope="{row}">
           <span>{{ row.author }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="showReviewer" label="Reviewer" width="110px" align="center">
+      <el-table-column v-if="showReviewer" align="center" label="Reviewer" width="110px">
         <template slot-scope="{row}">
           <span style="color:red;">{{ row.reviewer }}</span>
         </template>
       </el-table-column>
 
-<!--      <el-table-column label="Imp" width="80px">-->
-<!--        <template slot-scope="{row}">-->
-<!--          <svg-icon v-for="n in + row.importance" :key="n" icon-class="star" class="meta-item__icon" />-->
-<!--        </template>-->
-<!--      </el-table-column>-->
+      <!--      <el-table-column label="Imp" width="80px">-->
+      <!--        <template slot-scope="{row}">-->
+      <!--          <svg-icon v-for="n in + row.importance" :key="n" icon-class="star" class="meta-item__icon" />-->
+      <!--        </template>-->
+      <!--      </el-table-column>-->
 
-      <el-table-column label="Readings" align="center" width="95">
+      <el-table-column align="center" label="Readings" width="95">
         <template slot-scope="{row}">
           <span v-if="row.pageviews" class="link-type" @click="handleFetchPv(row.pageviews)">{{ row.pageviews }}</span>
           <span v-else>0</span>
         </template>
       </el-table-column>
-      <el-table-column label="Status" class-name="status-col" width="100">
+      <el-table-column class-name="status-col" label="Status" width="100">
         <template slot-scope="{row}">
           <el-tag :type="row.status | statusFilter">
             {{ row.status }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="Actions" align="center" width="230" class-name="small-padding fixed-width">
+      <el-table-column align="center" class-name="small-padding fixed-width" label="Actions" width="230">
         <template slot-scope="{row,$index}">
-          <el-button type="primary" size="mini" @click="handleUpdate(row)">
+          <el-button size="mini" type="primary" @click="handleUpdate(row)">
             Edit
           </el-button>
-          <el-button v-if="row.status!='published'" size="mini" type="success" @click="handleModifyStatus(row,'published')">
+          <el-button v-if="row.status!='published'" size="mini" type="success"
+                     @click="handleModifyStatus(row,'published')">
             Publish
           </el-button>
           <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
@@ -99,7 +105,8 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <pagination v-show="total>0" :limit.sync="listQuery.limit" :page.sync="listQuery.page" :total="total"
+                @pagination="getList"/>
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
 
@@ -131,7 +138,7 @@
         </el-form-item>
 
         <!--        Resource-->
-        <el-form-item label="Resource" >
+        <el-form-item label="Resource">
           <el-select v-model="temp.resource" class="filter-item" placeholder="Please select">
             <el-option v-for="item in resourceOptions"
                        :key="item"
@@ -158,8 +165,8 @@
 
     <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
       <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column prop="key" label="Channel" />
-        <el-table-column prop="pv" label="Pv" />
+        <el-table-column label="Channel" prop="key"/>
+        <el-table-column label="Pv" prop="pv"/>
       </el-table>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
@@ -169,16 +176,16 @@
 </template>
 
 <script>
-import { fetchList, fetchPv, createArticle, updateArticle } from '@/api/article'
+import {createArticle, fetchList, fetchPv, updateArticle} from '@/api/article'
 import waves from '@/directive/waves' // waves directive
-import { parseTime } from '@/utils'
+import {parseTime} from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 const calendarTypeOptions = [
-  { key: 'CN', display_name: 'China' },
-  { key: 'US', display_name: 'USA' },
-  { key: 'JP', display_name: 'Japan' },
-  { key: 'EU', display_name: 'Eurozone' }
+  {key: 'CN', display_name: 'China'},
+  {key: 'US', display_name: 'USA'},
+  {key: 'JP', display_name: 'Japan'},
+  {key: 'EU', display_name: 'Eurozone'}
 ]
 
 // arr to obj, such as { CN : "China", US : "USA" }
@@ -189,8 +196,8 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: { Pagination },
-  directives: { waves },
+  components: {Pagination},
+  directives: {waves},
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -220,11 +227,20 @@ export default {
       },
       importanceOptions: [1, 2, 3],
       calendarTypeOptions,
-      sortOptions: [{ label: 'ID Ascending', key: '+id' }, { label: 'ID Descending', key: '-id' }],
+      sortOptions: [
+        {
+          label: 'ID Ascending',
+          key: '+id'
+        },
+        {
+          label: 'ID Descending',
+          key: '-id'
+        }
+      ],
       statusOptions: ['published', 'draft', 'deleted'],
       showReviewer: false,
-      departmentOptions: ['nursing', 'IBM'],
-      resourceOptions: ['thesis', 'general'],
+      departmentOptions: ['Nursing', 'BMS', 'Psychology', 'Management', 'Acupuncture', 'IT'],
+      resourceOptions: ['Thesis', 'General'],
       temp: {
         id: undefined,
         department: '',
@@ -277,7 +293,7 @@ export default {
       row.status = status
     },
     sortChange(data) {
-      const { prop, order } = data
+      const {prop, order} = data
       if (prop === 'id') {
         this.sortByID(order)
       }
@@ -393,7 +409,7 @@ export default {
         }
       }))
     },
-    getSortClass: function(key) {
+    getSortClass: function (key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
     }
