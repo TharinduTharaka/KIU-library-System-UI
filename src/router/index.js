@@ -7,10 +7,10 @@ Vue.use(Router)
 import Layout from '@/layout'
 
 /* Router Modules */
-// import componentsRouter from './modules/components'
-// import chartsRouter from './modules/charts'
-// import tableRouter from './modules/table'
-// import nestedRouter from './modules/nested'
+import componentsRouter from './modules/components'
+import chartsRouter from './modules/charts'
+import tableRouter from './modules/table'
+import nestedRouter from './modules/nested'
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -107,20 +107,28 @@ export const asyncRoutes = [
   {
     path: '/module_3',
     component: Layout,
-    redirect: '/module_3/add_documents',
+    redirect: '/module_3/library_documents',
     alwaysShow: true, // will always show the root menu
-    name: 'LibraryDocuments',
+    name: 'Documents',
     meta: {
-      title: 'Library Documents',
+      title: 'Documents',
       icon: 'lock',
     },
     children: [
       {
-        path: 'add_documents',
+        path: 'library_documents',
         component: () => import('@/views/library-documents/add-documents/index'),
-        name: 'AddDocuments',
+        name: 'libraryDocuments',
         meta: {
-          title: 'Add Documents',
+          title: 'Library Documents',
+        }
+      },
+      {
+        path: 'library_meeting_minutes',
+        component: () => import('@/views/library-documents/library-meeting-minutes/index'),
+        name: 'libraryMeetingMinutes',
+        meta: {
+          title: 'Library Meeting Minutes',
         }
       },
       // {
@@ -144,6 +152,11 @@ export const asyncRoutes = [
     ]
   },
 
+  /** when your routing map is too long, you can split it into small modules **/
+  componentsRouter,
+  chartsRouter,
+  nestedRouter,
+  tableRouter,
 
   {
     path: '/module_1',

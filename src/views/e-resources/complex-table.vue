@@ -1,22 +1,59 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.title" class="filter-item" placeholder="Title" style="width: 200px;"
-                @keyup.enter.native="handleFilter"/>
-      <!--      <el-select v-model="listQuery.importance" placeholder="Imp" clearable style="width: 90px" class="filter-item">-->
-      <!--        <el-option v-for="item in importanceOptions" :key="item" :label="item" :value="item" />-->
-      <!--      </el-select>-->
-<!--      <el-select v-model="listQuery.type" class="filter-item" clearable placeholder="Type" style="width: 130px">-->
-<!--        <el-option v-for="item in calendarTypeOptions" :key="item.key" :label="item.display_name+'('+item.key+')'"-->
-<!--                   :value="item.key"/>-->
-<!--      </el-select>-->
+      <el-input
+        v-model="listQuery.title"
+        class="filter-item"
+        placeholder="Title"
+        style="width: 200px;"
+        @keyup.enter.native="handleFilter"/>
 
-      <el-select v-model="listQuery.sort" class="filter-item" style="width: 140px" @change="handleFilter">
+      <el-select
+        v-model="listQuery.importance"
+        class="filter-item"
+        clearable
+        placeholder="Status"
+        style="width: 90px">
+        <el-option
+          v-for="item in importanceOptions"
+          :key="item"
+          :label="item"
+          :value="item"/>
+      </el-select>
+
+      <el-select
+        v-model="listQuery.type"
+        class="filter-item"
+        clearable
+        placeholder="Department"
+        style="width: 130px">
+        <el-option
+          v-for="item in calendarTypeOptions"
+          :key="item.key"
+          :label="item.display_name+'('+item.key+')'"
+          :value="item.key"/>
+      </el-select>
+
+      <el-select
+        v-model="listQuery.type"
+        class="filter-item"
+        clearable
+        placeholder="Resource"
+        style="width: 130px">
+        <el-option
+          v-for="item in calendarTypeOptions"
+          :key="item.key"
+          :label="item.display_name+'('+item.key+')'"
+          :value="item.key"/>
+      </el-select>
+
+      <el-select v-model="listQuery.sort" class="filter-item" style="width: 140px " @change="handleFilter">
         <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
       </el-select>
-      <el-button v-waves class="filter-item" icon="el-icon-search" type="primary" @click="handleFilter">
+      <el-button v-waves class="filter-item" icon="el-icon-search" type="primary" @click="handleFilter" style="margin-left: 10px;">
         Search
       </el-button>
+      <br>
       <el-button class="filter-item" icon="el-icon-edit" style="margin-left: 10px;" type="primary"
                  @click="handleCreate">
         Add
@@ -86,11 +123,27 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column align="center" class-name="small-padding fixed-width" label="Actions" width="230">
+      <el-table-column class-name="status-col" label="Department" width="100">
+        <template slot-scope="{row}">
+          <el-tag :type="row.status | statusFilter">
+            {{ row.status }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column class-name="status-col" label="Resource" width="100">
+        <template slot-scope="{row}">
+          <el-tag :type="row.status | statusFilter">
+            {{ row.status }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column align="center" class-name="small-padding fixed-width " label="Actions" width="120">
         <template slot-scope="{row,$index}">
           <el-button size="mini" type="primary" @click="handleUpdate(row)">
             Edit
           </el-button>
+          <br><br>
+          <!--          <div>-->
           <el-button v-if="row.status!='published'" size="mini" type="success"
                      @click="handleModifyStatus(row,'published')">
             Publish
@@ -98,9 +151,12 @@
           <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
             Draft
           </el-button>
+          <!--          </div>-->
+          <br><br>
           <el-button v-if="row.status!='deleted'" size="mini" type="danger" @click="handleDelete(row,$index)">
             Delete
           </el-button>
+          <br>
         </template>
       </el-table-column>
     </el-table>
@@ -151,6 +207,17 @@
         <el-form-item label="Author" prop="author">
           <el-input v-model="temp.author"/>
         </el-form-item>
+
+        <el-form-item label="Documents">
+          <!--          <div class="components-container">-->
+          <!--            <div class="editor-container">-->
+          <dropzone id="myVueDropzone" url="https://httpbin.org/post"
+                    @dropzone-removedFile="dropzoneR"
+                    @dropzone-success="dropzoneS"/>
+          <!--            </div>-->
+          <!--          </div>-->
+        </el-form-item>
+
       </el-form>
 
       <div slot="footer" class="dialog-footer">
@@ -180,6 +247,7 @@ import {createArticle, fetchList, fetchPv, updateArticle} from '@/api/article'
 import waves from '@/directive/waves' // waves directive
 import {parseTime} from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import Dropzone from '@/views/e-resources/dropzone/index'
 
 const calendarTypeOptions = [
   {key: 'CN', display_name: 'China'},
@@ -196,7 +264,7 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: {Pagination},
+  components: {Pagination, Dropzone},
   directives: {waves},
   filters: {
     statusFilter(status) {
@@ -269,6 +337,14 @@ export default {
     this.getList()
   },
   methods: {
+    dropzoneS(file) {
+      console.log(file)
+      this.$message({message: 'Upload success', type: 'success'})
+    },
+    dropzoneR(file) {
+      console.log(file)
+      this.$message({message: 'Delete success', type: 'success'})
+    },
     getList() {
       this.listLoading = true
       fetchList(this.listQuery).then(response => {
