@@ -6,19 +6,22 @@
         class="filter-item"
         placeholder="Title"
         style="width: 200px;"
-        @keyup.enter.native="handleFilter"/>
+        @keyup.enter.native="handleFilter"
+      />
 
       <el-select
         v-model="listQuery.importance"
         class="filter-item"
         clearable
         placeholder="Status"
-        style="width: 90px">
+        style="width: 90px"
+      >
         <el-option
           v-for="item in importanceOptions"
           :key="item"
           :label="item"
-          :value="item"/>
+          :value="item"
+        />
       </el-select>
 
       <el-select
@@ -26,12 +29,14 @@
         class="filter-item"
         clearable
         placeholder="Department"
-        style="width: 130px">
+        style="width: 130px"
+      >
         <el-option
           v-for="item in calendarTypeOptions"
           :key="item.key"
           :label="item.display_name+'('+item.key+')'"
-          :value="item.key"/>
+          :value="item.key"
+        />
       </el-select>
 
       <el-select
@@ -39,27 +44,40 @@
         class="filter-item"
         clearable
         placeholder="Resource"
-        style="width: 130px">
+        style="width: 130px"
+      >
         <el-option
           v-for="item in calendarTypeOptions"
           :key="item.key"
           :label="item.display_name+'('+item.key+')'"
-          :value="item.key"/>
+          :value="item.key"
+        />
       </el-select>
 
       <el-select v-model="listQuery.sort" class="filter-item" style="width: 140px " @change="handleFilter">
-        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key"/>
+        <el-option v-for="item in sortOptions" :key="item.key" :label="item.label" :value="item.key" />
       </el-select>
-      <el-button v-waves class="filter-item" icon="el-icon-search" type="primary" @click="handleFilter" style="margin-left: 10px;">
+      <el-button v-waves class="filter-item" icon="el-icon-search" type="primary" style="margin-left: 10px;" @click="handleFilter">
         Search
       </el-button>
       <br>
-      <el-button class="filter-item" icon="el-icon-edit" style="margin-left: 10px;" type="primary"
-                 @click="handleCreate">
+      <el-button
+        class="filter-item"
+        icon="el-icon-edit"
+        style="margin-left: 10px;"
+        type="primary"
+        @click="handleCreate"
+      >
         Add
       </el-button>
-      <el-button v-waves :loading="downloadLoading" class="filter-item" icon="el-icon-download" type="primary"
-                 @click="handleDownload">
+      <el-button
+        v-waves
+        :loading="downloadLoading"
+        class="filter-item"
+        icon="el-icon-download"
+        type="primary"
+        @click="handleDownload"
+      >
         Export
       </el-button>
       <el-checkbox v-model="showReviewer" class="filter-item" style="margin-left:15px;" @change="tableKey=tableKey+1">
@@ -75,9 +93,16 @@
       fit
       highlight-current-row
       style="width: 100%;"
-      @sort-change="sortChange">
-      <el-table-column :class-name="getSortClass('id')" align="center" label="ID" prop="id" sortable="custom"
-                       width="80">
+      @sort-change="sortChange"
+    >
+      <el-table-column
+        :class-name="getSortClass('id')"
+        align="center"
+        label="ID"
+        prop="id"
+        sortable="custom"
+        width="80"
+      >
         <template slot-scope="{row}">
           <span>{{ row.id }}</span>
         </template>
@@ -125,15 +150,15 @@
       </el-table-column>
       <el-table-column class-name="status-col" label="Department" width="100">
         <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
+          <el-tag :type="row.department | statusFilter">
+            {{ row.department }}
           </el-tag>
         </template>
       </el-table-column>
       <el-table-column class-name="status-col" label="Resource" width="100">
         <template slot-scope="{row}">
-          <el-tag :type="row.status | statusFilter">
-            {{ row.status }}
+          <el-tag :type="row.resource | statusFilter">
+            {{ row.resource }}
           </el-tag>
         </template>
       </el-table-column>
@@ -144,8 +169,12 @@
           </el-button>
           <br><br>
           <!--          <div>-->
-          <el-button v-if="row.status!='published'" size="mini" type="success"
-                     @click="handleModifyStatus(row,'published')">
+          <el-button
+            v-if="row.status!='published'"
+            size="mini"
+            type="success"
+            @click="handleModifyStatus(row,'published')"
+          >
             Publish
           </el-button>
           <el-button v-if="row.status!='draft'" size="mini" @click="handleModifyStatus(row,'draft')">
@@ -161,59 +190,72 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :limit.sync="listQuery.limit" :page.sync="listQuery.page" :total="total"
-                @pagination="getList"/>
+    <pagination
+      v-show="total>0"
+      :limit.sync="listQuery.limit"
+      :page.sync="listQuery.page"
+      :total="total"
+      @pagination="getList"
+    />
 
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible">
 
-      <el-form ref="dataForm"
-               :model="temp"
-               :rules="rules"
-               label-position="left"
-               label-width="100px"
-               style="width: 400px;
-               margin-left:50px;">
-
+      <el-form
+        ref="dataForm"
+        :model="temp"
+        :rules="rules"
+        label-position="left"
+        label-width="100px"
+        style="width: 400px;
+               margin-left:50px;"
+      >
 
         <el-form-item label="Date" prop="timestamp">
-          <el-date-picker v-model="temp.date" placeholder="Please pick a date" type="datetime"/>
+          <el-date-picker v-model="temp.date" placeholder="Please pick a date" type="datetime" />
         </el-form-item>
 
         <el-form-item label="Title" prop="title">
-          <el-input v-model="temp.title"/>
+          <el-input v-model="temp.title" />
         </el-form-item>
 
         <!--        Department-->
         <el-form-item label="Department">
           <el-select v-model="temp.department" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in departmentOptions"
-                       :key="item"
-                       :label="item"
-                       :value="item"/>
+            <el-option
+              v-for="item in departmentOptions"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
           </el-select>
         </el-form-item>
 
         <!--        Resource-->
         <el-form-item label="Resource">
           <el-select v-model="temp.resource" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in resourceOptions"
-                       :key="item"
-                       :label="item"
-                       :value="item"/>
+            <el-option
+              v-for="item in resourceOptions"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
           </el-select>
         </el-form-item>
 
         <!--        Author-->
         <el-form-item label="Author" prop="author">
-          <el-input v-model="temp.author"/>
+          <el-input v-model="temp.author" />
         </el-form-item>
 
         <el-form-item label="Documents">
           <!--          <div class="components-container">-->
           <!--            <div class="editor-container">-->
-          <dropzone id="myVueDropzone" url="https://httpbin.org/post"
-                    @dropzone-removedFile="dropzoneR"
-                    @dropzone-success="dropzoneS"/>
+          <dropzone
+            id="myVueDropzone"
+            url="https://httpbin.org/post"
+            @dropzone-removedFile="dropzoneR"
+            @dropzone-success="dropzoneS"
+          />
           <!--            </div>-->
           <!--          </div>-->
         </el-form-item>
@@ -232,8 +274,8 @@
 
     <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
       <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
-        <el-table-column label="Channel" prop="key"/>
-        <el-table-column label="Pv" prop="pv"/>
+        <el-table-column label="Channel" prop="key" />
+        <el-table-column label="Pv" prop="pv" />
       </el-table>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="dialogPvVisible = false">Confirm</el-button>
@@ -243,17 +285,18 @@
 </template>
 
 <script>
-import {createArticle, fetchList, fetchPv, updateArticle} from '@/api/article'
+import { fetchPv } from '@/api/article'
+import { createArticle, fetchList, deleteEresource, updateArticle } from '@/api/eresources'
 import waves from '@/directive/waves' // waves directive
-import {parseTime} from '@/utils'
+import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import Dropzone from '@/views/e-resources/dropzone/index'
 
 const calendarTypeOptions = [
-  {key: 'CN', display_name: 'China'},
-  {key: 'US', display_name: 'USA'},
-  {key: 'JP', display_name: 'Japan'},
-  {key: 'EU', display_name: 'Eurozone'}
+  { key: 'CN', display_name: 'China' },
+  { key: 'US', display_name: 'USA' },
+  { key: 'JP', display_name: 'Japan' },
+  { key: 'EU', display_name: 'Eurozone' }
 ]
 
 // arr to obj, such as { CN : "China", US : "USA" }
@@ -264,8 +307,8 @@ const calendarTypeKeyValue = calendarTypeOptions.reduce((acc, cur) => {
 
 export default {
   name: 'ComplexTable',
-  components: {Pagination, Dropzone},
-  directives: {waves},
+  components: { Pagination, Dropzone },
+  directives: { waves },
   filters: {
     statusFilter(status) {
       const statusMap = {
@@ -326,9 +369,9 @@ export default {
       dialogPvVisible: false,
       pvData: [],
       rules: {
-        author: [{required: true, message: 'author is required', trigger: 'change'}],
-        timestamp: [{type: 'date', required: true, message: 'timestamp is required', trigger: 'change'}],
-        title: [{required: true, message: 'title is required', trigger: 'blur'}]
+        author: [{ required: true, message: 'author is required', trigger: 'change' }],
+        timestamp: [{ type: 'date', required: true, message: 'timestamp is required', trigger: 'change' }],
+        title: [{ required: true, message: 'title is required', trigger: 'blur' }]
       },
       downloadLoading: false
     }
@@ -339,11 +382,11 @@ export default {
   methods: {
     dropzoneS(file) {
       console.log(file)
-      this.$message({message: 'Upload success', type: 'success'})
+      this.$message({ message: 'Upload success', type: 'success' })
     },
     dropzoneR(file) {
       console.log(file)
-      this.$message({message: 'Delete success', type: 'success'})
+      this.$message({ message: 'Delete success', type: 'success' })
     },
     getList() {
       this.listLoading = true
@@ -358,10 +401,12 @@ export default {
       })
     },
     handleFilter() {
-      this.listQuery.page = 1
+      this.listQuery.page = 0
       this.getList()
     },
     handleModifyStatus(row, status) {
+      updateArticle(row)
+
       this.$message({
         message: 'Success',
         type: 'success'
@@ -369,7 +414,7 @@ export default {
       row.status = status
     },
     sortChange(data) {
-      const {prop, order} = data
+      const { prop, order } = data
       if (prop === 'id') {
         this.sortByID(order)
       }
@@ -432,7 +477,7 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           const tempData = Object.assign({}, this.temp)
-          tempData.timestamp = +new Date(tempData.timestamp) // change Thu Nov 30 2017 16:41:05 GMT+0800 (CST) to 1512031311464
+          this.temp.timestamp = new Date(this.temp.timestamp)
           updateArticle(tempData).then(() => {
             const index = this.list.findIndex(v => v.id === this.temp.id)
             this.list.splice(index, 1, this.temp)
@@ -448,6 +493,7 @@ export default {
       })
     },
     handleDelete(row, index) {
+      deleteEresource(row.id, 2)
       this.$notify({
         title: 'Success',
         message: 'Delete Successfully',
@@ -485,7 +531,7 @@ export default {
         }
       }))
     },
-    getSortClass: function (key) {
+    getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : 'descending'
     }
